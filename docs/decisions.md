@@ -1,0 +1,15 @@
+# Decision log
+
+One line per decision. Open items are Kamal's to close; Kamil proposes, Kamal decides.
+
+| Date | Decision | Status | Why / where |
+|---|---|---|---|
+| 2026-09-21 | Characters are generated from python-lottie code, not drawn in After Effects | decided | Fix = number + re-run; diffable; the two references were already code-generated (named groups, transform keys) |
+| 2026-09-21 | Every character carries `idle` and `tap` Lottie markers; app plays by name | decided | Timing changes never touch app code; `README.md` |
+| 2026-09-21 | Two canvases only: 600×420 bowl letters, 420×680 tall letters | proposed | Matches the two references; keeps layout grid simple |
+| 2026-09-21 | Dots may be creatures (butterflies) but must rest exactly at dot positions | proposed | Letter readability first; `research/01_early_years_pedagogy.md` |
+| 2026-09-21 | Tap reaction length 3 s | proposed | Too long for rapid re-tapping? Test with a child |
+| 2026-09-21 | Mnemonic word must start with the letter SOUND, not its name; kid-known object | proposed | `research/02_orenda_taleemabad_practice.md` word table |
+| 2026-09-21 | Pilot audio is machine TTS (CC BY-NC); human recording before any release | decided | Licence + every successful literacy app ships human voice |
+| 2026-09-21 | First batch letter order | open | Frequency-first (ا ب ک ل م ن, from urdu-reading-course corpus) vs curriculum order (ا ب پ ت …); see research 01/02 |
+| 2026-09-21 | App stack (PWA vs Flutter vs React Native) for low-end Android, offline | open | Recommendation in `research/03_kids_app_design_and_interactivity.md` |
