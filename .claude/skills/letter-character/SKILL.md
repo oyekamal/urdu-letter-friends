@@ -13,6 +13,10 @@ One Lottie per letter. The character's body is the letter shape; the dots are pa
 3. Dots stay dots in the resting pose. They may become creatures (butterflies) but must settle back to dot positions in `idle`.
 4. One tap = one reaction + the letter sound. No menus, no text, no timers, no lives. Rules in `research/03_kids_app_design_and_interactivity.md`.
 
+5. **No fake dots.** Two round eyes on a ب body reads as ت. One eye, eyes off the stroke, or lid-shaped eyes; never a round mark on or near a stroke that is not a real dot (research 01 §5).
+6. **Check the word before drawing, and record it** in `lotties/manifest.json` under `mnemonic_check` (passes / fails + why). The worm for Alif failed this (کیڑا); do not repeat it.
+7. Read `docs/app-plan.md` §4 for how the character feeds the lesson (sound → name → word on tap, trace path = body stroke).
+
 ## Build
 ```bash
 cp scripts/make_tay.py scripts/make_<id>.py     # copy the closest existing generator
