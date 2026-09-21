@@ -17,6 +17,8 @@ One Lottie per letter. The character's body is the letter shape; the dots are pa
 6. **Check the word before drawing, and record it** in `lotties/manifest.json` under `mnemonic_check` (passes / fails + why). The worm for Alif failed this (کیڑا); do not repeat it.
 7. Read `docs/app-plan.md` §4 for how the character feeds the lesson (sound → name → word on tap, trace path = body stroke).
 
+8. **Shape test before sound test is even worth running**: the object must ALREADY look like the letter (Kamal's duck rule). Score 1–3 in `docs/mnemonic-shape-fit.md`; only a 3 (or a 2 with Kamal's ok) gets drawn. Meem-fish and Noon-orange were 1s and got rejected.
+
 ## Build
 ```bash
 cp scripts/make_tay.py scripts/make_<id>.py     # copy the closest existing generator

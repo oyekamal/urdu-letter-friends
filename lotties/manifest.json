@@ -61,7 +61,8 @@
       "status": "review",
       "mnemonic_check": "passes: انگلی ungli starts with the alif vowel sound; traditional انار anaar kept as the spoken word option. Worm (کیڑا) retired to lotties/legacy/ on Kamal's call 2026-09-21",
       "face_check": "two small eyes on a dotless letter: no fake-dot risk for Alif",
-      "generator": "scripts/make_alif.py"
+      "generator": "scripts/make_alif.py",
+      "shape_fit": 3
     },
     {
       "id": "be",
@@ -78,7 +79,8 @@
       "segments": null,
       "status": "reference (Kamal's original, 6 s loop, no markers yet)",
       "mnemonic_check": "passes: بطخ batakh",
-      "face_check": "one eye on stroke; research 01 §5 warns round eyes near strokes read as dots. House style pending."
+      "face_check": "one eye on stroke; research 01 §5 warns round eyes near strokes read as dots. House style pending.",
+      "shape_fit": 3
     },
     {
       "id": "te",
@@ -105,7 +107,8 @@
       "status": "review",
       "generator": "scripts/make_tay.py",
       "mnemonic_check": "passes via butterflies (تتلی titli); leaf (پتّا) fails, so butterflies are the character and the leaf is the perch",
-      "face_check": "one eye on stroke; research 01 §5 warns round eyes near strokes read as dots. House style pending."
+      "face_check": "one eye on stroke; research 01 §5 warns round eyes near strokes read as dots. House style pending.",
+      "shape_fit": 2
     },
     {
       "id": "meem",
@@ -129,10 +132,11 @@
           180
         ]
       },
-      "status": "review",
+      "status": "rejected by Kamal 2026-09-21 (weak shape fit); see docs/mnemonic-shape-fit.md",
       "generator": "scripts/make_meem.py",
       "mnemonic_check": "passes: مچھلی machhli starts with /m/",
-      "face_check": "one eye inside the loop; Meem has no dots so no fake-dot risk"
+      "face_check": "one eye inside the loop; Meem has no dots so no fake-dot risk",
+      "shape_fit": 1
     },
     {
       "id": "noon",
@@ -156,10 +160,11 @@
           180
         ]
       },
-      "status": "review",
+      "status": "rejected by Kamal 2026-09-21 (weak shape fit); see docs/mnemonic-shape-fit.md",
       "generator": "scripts/make_noon.py",
       "mnemonic_check": "passes: نارنگی narangi starts with /n/; the orange IS the character",
-      "face_check": "face only on the orange (the real dot); the bowl has no eye so nothing reads as a second dot"
+      "face_check": "face only on the orange (the real dot); the bowl has no eye so nothing reads as a second dot",
+      "shape_fit": 1
     }
   ]
 }
