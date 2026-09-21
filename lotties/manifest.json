@@ -42,16 +42,26 @@
       "name_ur": "الف",
       "name": "alif",
       "sound": "long a / vowel seat",
-      "character": "worm",
-      "word_ur": "انار",
-      "word": "anaar (pomegranate)",
-      "file": "alif-worm.json",
+      "character": "finger pointing up (ungli)",
+      "word_ur": "انگلی",
+      "word": "ungli (finger)",
+      "file": "alif-ungli.json",
       "canvas": "tall",
       "audio_name": "audio/names/alif.mp3",
-      "segments": null,
-      "status": "reference (Kamal's original, 15 s continuous, no markers yet)",
-      "mnemonic_check": "FAILS: worm = کیڑا (/k/). Alif word is انار anaar; Alif is a vowel carrier. Decision pending (docs/decisions.md)",
-      "face_check": "one eye on stroke; research 01 §5 warns round eyes near strokes read as dots. House style pending."
+      "segments": {
+        "idle": [
+          0,
+          90
+        ],
+        "tap": [
+          90,
+          180
+        ]
+      },
+      "status": "review",
+      "mnemonic_check": "passes: انگلی ungli starts with the alif vowel sound; traditional انار anaar kept as the spoken word option. Worm (کیڑا) retired to lotties/legacy/ on Kamal's call 2026-09-21",
+      "face_check": "two small eyes on a dotless letter: no fake-dot risk for Alif",
+      "generator": "scripts/make_alif.py"
     },
     {
       "id": "be",

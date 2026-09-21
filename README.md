@@ -1,6 +1,6 @@
 # Urdu Letter Friends · حرف دوست
 
-Interactive Lottie characters that teach children aged 3–6 the Urdu alphabet. Each letter is an animal or object whose body **is** the letter: Alif is a worm, Ba is a duck, Tay is a leaf with two butterflies for its dots. Tap a character and it reacts and says its letter. Everything is generated from code, so a fix is a number and a re-run, and every design choice is tied to a cited reason in `research/`.
+Interactive Lottie characters that teach children aged 3–6 the Urdu alphabet. Each letter is an animal or object whose body **is** the letter: Alif is a finger pointing up, Ba is a duck, Tay is a leaf with two butterflies for its dots. Tap a character and it reacts and says its letter. Everything is generated from code, so a fix is a number and a re-run, and every design choice is tied to a cited reason in `research/`.
 
 **Live review page:** https://oyekamal.github.io/urdu-letter-friends/review/ (tap the characters)
 
@@ -12,7 +12,7 @@ Most "alif bay pay" apps are slop: a static picture, a chant, a coin animation. 
 
 | Path | What |
 |---|---|
-| `lotties/` | The characters (`alif-worm.json`, `ba-duck.json`, `tay-titli.json`) and `manifest.json`, the single source of truth: letter, sound, mnemonic word, canvas, segments, audio, status |
+| `lotties/` | The characters (`alif-ungli.json`, `ba-duck.json`, `tay-titli.json`; retired `legacy/alif-worm.json`) and `manifest.json`, the single source of truth: letter, sound, mnemonic word, canvas, segments, audio, status |
 | `scripts/harf_rig.py` | Shared python-lottie rig: canvas sizes, easing, `face()`, `blink()`, `bob()`, `sway()`, `look()`, `sparkle_burst()`, `export()` with `idle`/`tap` markers. Run it to self-check |
 | `scripts/make_tay.py` | The first generated character; copy it for the next letter |
 | `scripts/render_frames.py` | Renders N frames with lottie-web in headless Chrome to `review/frames/<name>.png`, the same renderer the app will use |
@@ -83,7 +83,7 @@ Full synthesis with citations: **[`docs/app-plan.md`](docs/app-plan.md)**. The s
 
 | Letter | Character | Mnemonic check | Status |
 |---|---|---|---|
-| ا alif | worm | fails (کیڑا); Alif word is انار | Kamal's reference, decision needed |
+| ا alif | finger pointing up (ungli) | passes (انگلی) | generated, in review; worm retired to lotties/legacy |
 | ب be | duck | passes (بطخ) | Kamal's reference, no markers yet |
 | ت te | leaf + two butterflies | passes via butterflies (تتلی) | generated, in review |
 
