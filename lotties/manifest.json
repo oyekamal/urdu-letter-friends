@@ -106,6 +106,60 @@
       "generator": "scripts/make_tay.py",
       "mnemonic_check": "passes via butterflies (تتلی titli); leaf (پتّا) fails, so butterflies are the character and the leaf is the perch",
       "face_check": "one eye on stroke; research 01 §5 warns round eyes near strokes read as dots. House style pending."
+    },
+    {
+      "id": "meem",
+      "ch": "م",
+      "name_ur": "میم",
+      "name": "meem",
+      "sound": "m",
+      "character": "fish (machhli): the loop is the body, the descending stroke is the tail",
+      "word_ur": "مچھلی",
+      "word": "machhli (fish)",
+      "file": "meem-machhli.json",
+      "canvas": "wide",
+      "audio_name": "audio/names/meem.mp3",
+      "segments": {
+        "idle": [
+          0,
+          90
+        ],
+        "tap": [
+          90,
+          180
+        ]
+      },
+      "status": "review",
+      "generator": "scripts/make_meem.py",
+      "mnemonic_check": "passes: مچھلی machhli starts with /m/",
+      "face_check": "one eye inside the loop; Meem has no dots so no fake-dot risk"
+    },
+    {
+      "id": "noon",
+      "ch": "ن",
+      "name_ur": "نون",
+      "name": "noon",
+      "sound": "n",
+      "character": "orange (narangi) as the dot, sitting over an orange-peel bowl",
+      "word_ur": "نارنگی",
+      "word": "narangi (orange)",
+      "file": "noon-narangi.json",
+      "canvas": "wide",
+      "audio_name": "audio/names/noon.mp3",
+      "segments": {
+        "idle": [
+          0,
+          90
+        ],
+        "tap": [
+          90,
+          180
+        ]
+      },
+      "status": "review",
+      "generator": "scripts/make_noon.py",
+      "mnemonic_check": "passes: نارنگی narangi starts with /n/; the orange IS the character",
+      "face_check": "face only on the orange (the real dot); the bowl has no eye so nothing reads as a second dot"
     }
   ]
 }

@@ -1,6 +1,6 @@
 # Urdu Letter Friends · حرف دوست
 
-Interactive Lottie characters that teach children aged 3–6 the Urdu alphabet. Each letter is an animal or object whose body **is** the letter: Alif is a finger pointing up, Ba is a duck, Tay is a leaf with two butterflies for its dots. Tap a character and it reacts and says its letter. Everything is generated from code, so a fix is a number and a re-run, and every design choice is tied to a cited reason in `research/`.
+Interactive Lottie characters that teach children aged 3–6 the Urdu alphabet. Each letter is an animal or object whose body **is** the letter: Alif is a finger pointing up, Ba is a duck, Tay is a leaf with two butterflies for its dots, Meem is a fish, Noon is an orange sitting over its peel. Tap a character and it reacts and says its letter. Everything is generated from code, so a fix is a number and a re-run, and every design choice is tied to a cited reason in `research/`.
 
 **Live review page:** https://oyekamal.github.io/urdu-letter-friends/review/ (tap the characters)
 
@@ -86,8 +86,10 @@ Full synthesis with citations: **[`docs/app-plan.md`](docs/app-plan.md)**. The s
 | ا alif | finger pointing up (ungli) | passes (انگلی) | generated, in review; worm retired to lotties/legacy |
 | ب be | duck | passes (بطخ) | Kamal's reference, no markers yet |
 | ت te | leaf + two butterflies | passes via butterflies (تتلی) | generated, in review |
+| م meem | fish (loop = body, stroke = tail) | passes (مچھلی) | generated, in review |
+| ن noon | orange as the dot over a peel bowl | passes (نارنگی) | generated, in review |
 
-Open decisions for Kamal are in [`docs/decisions.md`](docs/decisions.md): Alif re-theme, eye style (round eyes near strokes read as extra dots), tap length, marker set, stack. Next build: ن م ک ل د to finish wave 1.
+Open decisions for Kamal are in [`docs/decisions.md`](docs/decisions.md): Alif re-theme, eye style (round eyes near strokes read as extra dots), tap length, marker set, stack. Next build: ک ل د to finish wave 1.
 
 ## Licence
 
