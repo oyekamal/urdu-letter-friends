@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lottie Player & Inspector</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lottie Web library via CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    /* Checkerboard pattern for alpha transparency preview */
+    .bg-transparency-grid {
+      background-size: 20px 20px;
+      background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+      background-image: 
+        linear-gradient(45deg, #f1f5f9 25%, transparent 25%),
+        linear-gradient(-45deg, #f1f5f9 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #f1f5f9 75%),
+        linear-gradient(-45deg, transparent 75%, #f1f5f9 75%);
+    }
+    .dark .bg-transparency-grid {
+      background-size: 20px 20px;
+      background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+      background-image: 
+        linear-gradient(45deg, #1e293b 25%, transparent 25%),
+        linear-gradient(-45deg, #1e293b 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #1e293b 75%),
+        linear-gradient(-45deg, transparent 75%, #1e293b 75%);
+    }
+    /* Custom Range Scrubber styling */
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      height: 16px;
+      width: 16px;
+      border-radius: 50%;
+      background: #6366f1;
+      cursor: pointer;
+      box-shadow: 0 0 8px rgba(99, 102, 241, 0.5);
+      margin-top: -4px;
+    }
+    input[type=range]::-webkit-slider-runnable-track {
+      width: 100%;
+      height: 8px;
+      cursor: pointer;
+      background: #e2e8f0;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
+
+  <header class="border-b border-slate-800 bg-slate-950/70 backdrop-blur sticky top-0 z-40 px-6 py-4">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-500 to-violet-500 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+          <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-lg font-semibold tracking-tight leading-tight">Lottie Explorer</h1>
+          <p class="text-xs text-slate-400">Preview, Inspect & Tweak Animations</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button id="loadDefaultBtn" class="text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg transition border border-slate-700/60 shadow-sm flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+          </svg>
+          Reset to Demo
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto w-full p-4 md:p-6 flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+    <!-- Left / Top Column: Animation Canvas & Playback Bar -->
+    <div class="lg:col-span-8 flex flex-col gap-4">
+      
+      <!-- Stage Box -->
+      <div class="relative bg-slate-950 border border-slate-800/80 rounded-2xl overflow-hidden shadow-2xl flex flex-col flex-1 min-h-[420px]">
+        
+        <!-- Canvas Stage Top Bar -->
+        <div class="flex items-center justify-between px-4 py-2.5 bg-slate-900/90 border-b border-slate-800 text-xs text-slate-400">
+          <div class="flex items-center space-x-2">
+            <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span id="animationTitle" class="font-medium text-slate-200 truncate max-w-[200px] sm:max-w-xs">success_check.json</span>
+          </div>
+
+          <!-- Background theme toggles -->
+          <div class="flex items-center space-x-1.5">
+            <span class="text-[11px] text-slate-400 mr-1 hidden sm:inline">Background:</span>
+            <button data-bg="transparent" class="bg-mode-btn p-1.5 rounded-md hover:bg-slate-800 text-slate-400 hover:text-white transition title-tip border border-slate-700/50 bg-slate-800" title="Checkerboard (Transparent)">
+              <div class="w-3.5 h-3.5 rounded border border-slate-500 bg-transparency-grid"></div>
+            </button>
+            <button data-bg="#ffffff" class="bg-mode-btn p-1.5 rounded-md hover:bg-slate-800 text-slate-400 hover:text-white transition title-tip border border-slate-700/50" title="White">
+              <div class="w-3.5 h-3.5 rounded bg-white border border-slate-300"></div>
+            </button>
+            <button data-bg="#0f172a" class="bg-mode-btn p-1.5 rounded-md hover:bg-slate-800 text-slate-400 hover:text-white transition title-tip border border-slate-700/50" title="Dark Slate">
+              <div class="w-3.5 h-3.5 rounded bg-slate-900 border border-slate-700"></div>
+            </button>
+            <label class="p-1.5 rounded-md hover:bg-slate-800 text-slate-400 hover:text-white transition cursor-pointer border border-slate-700/50 flex items-center" title="Custom color">
+              <input type="color" id="customBgPicker" value="#0f172a" class="w-3.5 h-3.5 opacity-0 absolute pointer-events-none">
+              <span class="w-3.5 h-3.5 rounded-full bg-gradient-to-tr from-pink-500 via-purple-500 to-indigo-500 block"></span>
+            </label>
+          </div>
+        </div>
+
+        <div id="animationStage" class="relative flex-1 flex items-center justify-center p-6 bg-transparency-grid transition-colors duration-200 overflow-hidden">
+          <!-- Animation DOM node -->
+          <div id="lottieContainer" class="w-full h-full max-w-[460px] max-h-[460px] flex items-center justify-center transition-transform duration-100"></div>
+
+          <!-- Loading indicator / empty state -->
+          <div id="loaderOverlay" class="absolute inset-0 bg-slate-950/70 flex items-center justify-center backdrop-blur-sm hidden">
+            <div class="flex items-center space-x-2 text-indigo-400 text-sm font-medium">
+              <svg class="animate-spin h-5 w-5" viewBox="0 0 24 24" fill="none">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+              </svg>
+              <span>Parsing Animation...</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="p-4 bg-slate-900/90 border-t border-slate-800 flex flex-col gap-3">
+          <!-- Scrubber & Time Indicator -->
+          <div class="flex items-center gap-3">
+            <span id="currentTime" class="text-xs font-mono text-slate-400 w-12 text-right">0:00</span>
+            <input type="range" id="progressBar" min="0" max="100" value="0" step="0.1" class="flex-1 accent-indigo-500 bg-slate-800 rounded-lg cursor-pointer h-2">
+            <span id="totalDuration" class="text-xs font-mono text-slate-400 w-12">0:00</span>
+          </div>
+
+          <!-- Controls row -->
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <!-- Left group: Play/Pause/Stop/Step -->
+            <div class="flex items-center gap-2">
+              <button id="playBtn" class="bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white p-2.5 rounded-xl transition shadow-md shadow-indigo-600/30 flex items-center justify-center">
+                <!-- Play Icon -->
+                <svg id="playIcon" class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+                <!-- Pause Icon (hidden initially) -->
+                <svg id="pauseIcon" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+                </svg>
+              </button>
+
+              <button id="stopBtn" class="bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-300 p-2.5 rounded-xl border border-slate-700 transition" title="Stop & Reset">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M6 6h12v12H6z"/>
+                </svg>
+              </button>
+
+              <button id="stepBackBtn" class="bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-300 p-2.5 rounded-xl border border-slate-700 transition" title="Step Back 10 Frames">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12.066 11.2a1 1 0 000 1.6l5.334 4A1 1 0 0019 16V8a1 1 0 00-1.6-.8l-5.334 4zM4.066 11.2a1 1 0 000 1.6l5.334 4A1 1 0 0011 16V8a1 1 0 00-1.6-.8l-5.334 4z"/>
+                </svg>
+              </button>
+
+              <button id="stepForwardBtn" class="bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-300 p-2.5 rounded-xl border border-slate-700 transition" title="Step Forward 10 Frames">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.934 12.8a1 1 0 000-1.6l-5.334-4A1 1 0 005 8v8a1 1 0 001.6.8l5.334-4zM19.934 12.8a1 1 0 000-1.6l-5.334-4A1 1 0 0013 8v8a1 1 0 001.6.8l5.334-4z"/>
+                </svg>
+              </button>
+            </div>
+
+            <!-- Middle group: Speed Selectors -->
+            <div class="flex items-center bg-slate-800/80 rounded-xl p-1 border border-slate-700/60 text-xs">
+              <button class="speed-btn px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition" data-speed="0.5">0.5x</button>
+              <button class="speed-btn px-2.5 py-1 rounded-lg text-white bg-indigo-600 font-semibold shadow-sm transition" data-speed="1">1x</button>
+              <button class="speed-btn px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition" data-speed="1.5">1.5x</button>
+              <button class="speed-btn px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition" data-speed="2">2x</button>
+            </div>
+
+            <!-- Right group: Loop & Direction -->
+            <div class="flex items-center gap-1.5">
+              <button id="loopToggle" class="px-3 py-1.5 rounded-xl border border-indigo-500/50 bg-indigo-500/20 text-indigo-300 text-xs font-medium flex items-center gap-1.5 transition hover:bg-indigo-500/30" title="Toggle Loop">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                </svg>
+                Looping
+              </button>
+
+              <button id="directionToggle" class="px-3 py-1.5 rounded-xl border border-slate-700 bg-slate-800 text-slate-300 text-xs font-medium flex items-center gap-1.5 transition hover:bg-slate-700" title="Toggle Direction">
+                <span id="dirLabel">Forward</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right / Bottom Column: File Uploader, Metadata & Sample Picker -->
+    <div class="lg:col-span-4 flex flex-col gap-4">
+      
+      <!-- Upload Drop Zone Card -->
+      <div class="bg-slate-950 border border-slate-800 rounded-2xl p-5 shadow-xl flex flex-col gap-4">
+        <h2 class="text-sm font-semibold text-slate-200 tracking-wide uppercase flex items-center gap-2">
+          <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+          </svg>
+          Upload Lottie JSON
+        </h2>
+
+        <div id="dropZone" class="border-2 border-dashed border-slate-700 hover:border-indigo-500/80 bg-slate-900/50 hover:bg-slate-900 rounded-xl p-6 text-center cursor-pointer transition-all duration-200 group flex flex-col items-center justify-center gap-3">
+          <div class="w-12 h-12 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+          </div>
+          <div>
+            <p class="text-sm font-medium text-slate-300 group-hover:text-indigo-300 transition">
+              Drag & Drop Lottie JSON
+            </p>
+            <p class="text-xs text-slate-500 mt-1">or click to browse your computer</p>
+          </div>
+          <input type="file" id="fileInput" accept=".json,application/json" class="hidden">
+        </div>
+
+        <!-- URL Fetch Option -->
+        <div class="flex flex-col gap-1.5 pt-1">
+          <label class="text-xs font-medium text-slate-400">Or load from URL</label>
+          <div class="flex gap-2">
+            <input type="url" id="urlInput" placeholder="https://.../animation.json" class="flex-1 bg-slate-900 border border-slate-700/80 rounded-xl px-3 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition">
+            <button id="loadUrlBtn" class="bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-xs text-white px-3 py-2 rounded-xl transition font-medium whitespace-nowrap">
+              Fetch
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Info / Inspection Card -->
+      <div class="bg-slate-950 border border-slate-800 rounded-2xl p-5 shadow-xl flex flex-col gap-4">
+        <h2 class="text-sm font-semibold text-slate-200 tracking-wide uppercase flex items-center gap-2">
+          <svg class="w-4 h-4 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          Animation Metadata
+        </h2>
+
+        <div class="grid grid-cols-2 gap-2.5 text-xs">
+          <div class="bg-slate-900/80 border border-slate-800/80 p-3 rounded-xl flex flex-col">
+            <span class="text-slate-400">Framerate (FPS)</span>
+            <span id="metaFps" class="text-base font-semibold text-slate-100 mt-0.5">--</span>
+          </div>
+          <div class="bg-slate-900/80 border border-slate-800/80 p-3 rounded-xl flex flex-col">
+            <span class="text-slate-400">Total Frames</span>
+            <span id="metaFrames" class="text-base font-semibold text-slate-100 mt-0.5">--</span>
+          </div>
+          <div class="bg-slate-900/80 border border-slate-800/80 p-3 rounded-xl flex flex-col">
+            <span class="text-slate-400">Resolution</span>
+            <span id="metaDimensions" class="text-base font-semibold text-slate-100 mt-0.5">--</span>
+          </div>
+          <div class="bg-slate-900/80 border border-slate-800/80 p-3 rounded-xl flex flex-col">
+            <span class="text-slate-400">Layers Count</span>
+            <span id="metaLayers" class="text-base font-semibold text-slate-100 mt-0.5">--</span>
+          </div>
+        </div>
+
+        <!-- File Size & Version -->
+        <div class="bg-slate-900/40 rounded-xl p-3 border border-slate-800 text-[11px] text-slate-400 space-y-1">
+          <div class="flex justify-between">
+            <span>Bodymovin Version:</span>
+            <span id="metaVersion" class="text-slate-200 font-mono">--</span>
+          </div>
+          <div class="flex justify-between">
+            <span>File Size:</span>
+            <span id="metaSize" class="text-slate-200 font-mono">--</span>
+          </div>
+        </div>
+
+        <!-- Download JSON copy -->
+        <button id="downloadJsonBtn" class="w-full bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700/80 py-2.5 rounded-xl text-xs font-medium transition flex items-center justify-center gap-2">
+          <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+          </svg>
+          Export Raw JSON
+        </button>
+      </div>
+
+    </div>
+  </main>
+
+  <div id="toast" class="fixed bottom-6 right-6 bg-slate-800 border border-slate-700 text-white text-xs px-4 py-3 rounded-xl shadow-2xl transition-all duration-300 transform translate-y-20 opacity-0 pointer-events-none z-50 flex items-center gap-2.5">
+    <div id="toastIcon" class="w-2 h-2 rounded-full bg-indigo-400"></div>
+    <span id="toastMsg">Notification message</span>
+  </div>
+
+  <script>
+    // Embedded sample valid Lottie animation (Checkmark in circle)
+    const SAMPLE_LOTTIE_DATA = {
+      v: "5.5.7",
+      fr: 60,
+      ip: 0,
+      op: 120,
+      w: 400,
+      h: 400,
+      nm: "Interactive Checkmark",
+      ddd: 0,
+      assets: [],
+      layers: [
+        {
+          ddd: 0,
+          ind: 1,
+          ty: 4,
+          nm: "Checkmark",
+          sr: 1,
+          ks: {
+            o: { a: 0, k: 100 },
+            r: { a: 0, k: 0 },
+            p: { a: 0, k: [200, 200, 0] },
+            a: { a: 0, k: [0, 0, 0] },
+            s: { 
+              a: 1, 
+              k: [
+                { i: { x: [0.2, 0.2, 0.2], y: [1, 1, 1] }, o: { x: [0.3, 0.3, 0.3], y: [0, 0, 0] }, t: 25, s: [0, 0, 100] },
+                { i: { x: [0.2, 0.2, 0.2], y: [1, 1, 1] }, o: { x: [0.3, 0.3, 0.3], y: [0, 0, 0] }, t: 45, s: [115, 115, 100] },
+                { t: 60, s: [100, 100, 100] }
+              ] 
+            }
+          },
+          ao: 0,
+          shapes: [
+            {
+              ty: "gr",
+              it: [
+                {
+                  ind: 0,
+                  ty: "sh",
+                  ks: {
+                    a: 0,
+                    k: {
+                      i: [[0, 0], [0, 0], [0, 0]],
+                      o: [[0, 0], [0, 0], [0, 0]],
+                      v: [[-35, 2], [-10, 27], [40, -25]],
+                      c: false
+                    }
+                  }
+                },
+                {
+                  ty: "st",
+                  c: { a: 0, k: [1, 1, 1, 1] },
+                  o: { a: 0, k: 100 },
+                  w: { a: 0, k: 12 },
+                  lc: 2,
+                  lj: 2
+                },
+                {
+                  ty: "tm",
+                  s: { a: 0, k: 0 },
+                  e: {
+                    a: 1,
+                    k: [
+                      { i: { x: [0.4], y: [1] }, o: { x: [0.2], y: [0] }, t: 30, s: [0] },
+                      { t: 65, s: [100] }
+                    ]
+                  },
+                  o: { a: 0, k: 0 },
+                  m: 1
+                },
+                { ty: "tr", p: { a: 0, k: [0, 0] }, a: { a: 0, k: [0, 0] }, s: { a: 0, k: [100, 100] }, r: { a: 0, k: 0 }, o: { a: 0, k: 100 } }
+              ]
+            }
+          ]
+        },
+        {
+          ddd: 0,
+          ind: 2,
+          ty: 4,
+          nm: "Circle",
+          sr: 1,
+          ks: {
+            o: { a: 0, k: 100 },
+            r: { a: 0, k: 0 },
+            p: { a: 0, k: [200, 200, 0] },
+            a: { a: 0, k: [0, 0, 0] },
+            s: {
+              a: 1,
+              k: [
+                { i: { x: [0.2, 0.2, 0.2], y: [1, 1, 1] }, o: { x: [0.3, 0.3, 0.3], y: [0, 0, 0] }, t: 0, s: [0, 0, 100] },
+                { i: { x: [0.2, 0.2, 0.2], y: [1, 1, 1] }, o: { x: [0.3, 0.3, 0.3], y: [0, 0, 0] }, t: 30, s: [110, 110, 100] },
+                { t: 45, s: [100, 100, 100] }
+              ]
+            }
+          },
+          ao: 0,
+          shapes: [
+            {
+              ty: "el",
+              p: { a: 0, k: [0, 0] },
+              s: { a: 0, k: [160, 160] }
+            },
+            {
+              ty: "fl",
+              c: { a: 0, k: [0.388, 0.4, 0.945, 1] },
+              o: { a: 0, k: 100 },
+              r: 1
+            },
+            {
+              ty: "tr",
+              p: { a: 0, k: [0, 0] },
+              a: { a: 0, k: [0, 0] },
+              s: { a: 0, k: [100, 100] },
+              r: { a: 0, k: 0 },
+              o: { a: 0, k: 100 }
+            }
+          ]
+        }
+      ]
+    };
+
+    let animInstance = null;
+    let currentAnimData = null;
+    let isPlaying = false;
+    let isLooping = true;
+    let playDirection = 1;
+    let currentSpeed = 1;
+    let isScrubbing = false;
+
+    // DOM Element References
+    const container = document.getElementById('lottieContainer');
+    const stage = document.getElementById('animationStage');
+    const playBtn = document.getElementById('playBtn');
+    const playIcon = document.getElementById('playIcon');
+    const pauseIcon = document.getElementById('pauseIcon');
+    const stopBtn = document.getElementById('stopBtn');
+    const stepBackBtn = document.getElementById('stepBackBtn');
+    const stepForwardBtn = document.getElementById('stepForwardBtn');
+    const loopToggle = document.getElementById('loopToggle');
+    const directionToggle = document.getElementById('directionToggle');
+    const dirLabel = document.getElementById('dirLabel');
+    const progressBar = document.getElementById('progressBar');
+    const currentTimeEl = document.getElementById('currentTime');
+    const totalDurationEl = document.getElementById('totalDuration');
+    const speedButtons = document.querySelectorAll('.speed-btn');
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
+    const urlInput = document.getElementById('urlInput');
+    const loadUrlBtn = document.getElementById('loadUrlBtn');
+    const loadDefaultBtn = document.getElementById('loadDefaultBtn');
+    const downloadJsonBtn = document.getElementById('downloadJsonBtn');
+    const loaderOverlay = document.getElementById('loaderOverlay');
+    const customBgPicker = document.getElementById('customBgPicker');
+    const animationTitle = document.getElementById('animationTitle');
+
+    // Telemetry fields
+    const metaFps = document.getElementById('metaFps');
+    const metaFrames = document.getElementById('metaFrames');
+    const metaDimensions = document.getElementById('metaDimensions');
+    const metaLayers = document.getElementById('metaLayers');
+    const metaVersion = document.getElementById('metaVersion');
+    const metaSize = document.getElementById('metaSize');
+
+    function showToast(message, type = 'info') {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toastMsg');
+      const toastIcon = document.getElementById('toastIcon');
+
+      toastMsg.textContent = message;
+      if (type === 'error') {
+        toastIcon.className = 'w-2 h-2 rounded-full bg-rose-500';
+      } else if (type === 'success') {
+        toastIcon.className = 'w-2 h-2 rounded-full bg-emerald-400';
+      } else {
+        toastIcon.className = 'w-2 h-2 rounded-full bg-indigo-400';
+      }
+
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      clearTimeout(toast._timer);
+      toast._timer = setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 3500);
+    }
+
+    function formatTime(seconds) {
+      if (isNaN(seconds) || seconds < 0) return '0:00';
+      const m = Math.floor(seconds / 60);
+      const s = Math.floor(seconds % 60);
+      const ms = Math.floor((seconds % 1) * 10);
+      return `${m}:${s < 10 ? '0' : ''}${s}.${ms}`;
+    }
+
+    function formatFileSize(bytes) {
+      if (!bytes || bytes === 0) return 'Sample';
+      if (bytes < 1024) return bytes + ' B';
+      const kb = bytes / 1024;
+      if (kb < 1024) return kb.toFixed(1) + ' KB';
+      return (kb / 1024).toFixed(2) + ' MB';
+    }
+
+    function loadLottieData(jsonData, fileName = 'animation.json', rawByteSize = 0) {
+      try {
+        if (!jsonData || typeof jsonData !== 'object') {
+          throw new Error('Invalid JSON structure.');
+        }
+
+        // Basic sanity checks for Lottie format
+        if (!jsonData.v && !jsonData.layers && !jsonData.op) {
+          throw new Error('This JSON does not appear to be a valid Bodymovin/Lottie animation.');
+        }
+
+        // Clean up previous instance
+        if (animInstance) {
+          animInstance.destroy();
+          animInstance = null;
+        }
+
+        container.innerHTML = '';
+        currentAnimData = jsonData;
+
+        // Initialize bodymovin animation
+        animInstance = lottie.loadAnimation({
+          container: container,
+          renderer: 'svg',
+          loop: isLooping,
+          autoplay: true,
+          animationData: JSON.parse(JSON.stringify(jsonData)) // cloned copy
+        });
+
+        animInstance.setSpeed(currentSpeed);
+        animInstance.setDirection(playDirection);
+        isPlaying = true;
+        updatePlayPauseUI(true);
+
+        // Update Title
+        animationTitle.textContent = jsonData.nm || fileName;
+
+        // Update Inspector Metadata
+        const fps = jsonData.fr || 30;
+        const totalFrames = (jsonData.op || 0) - (jsonData.ip || 0);
+        const durationSecs = totalFrames / fps;
+
+        metaFps.textContent = `${fps} fps`;
+        metaFrames.textContent = `${Math.round(totalFrames)}`;
+        metaDimensions.textContent = `${jsonData.w || '?'} × ${jsonData.h || '?'}`;
+        metaLayers.textContent = `${jsonData.layers ? jsonData.layers.length : 0}`;
+        metaVersion.textContent = jsonData.v || 'Unknown';
+        metaSize.textContent = formatFileSize(rawByteSize);
+
+        totalDurationEl.textContent = formatTime(durationSecs);
+
+        // Frame updates via lottie enterFrame event
+        animInstance.addEventListener('enterFrame', (e) => {
+          if (!isScrubbing && animInstance) {
+            const currentFrame = animInstance.currentFrame;
+            const progress = (currentFrame / totalFrames) * 100;
+            progressBar.value = Math.min(100, Math.max(0, progress));
+
+            const elapsedSec = currentFrame / fps;
+            currentTimeEl.textContent = formatTime(elapsedSec);
+          }
+        });
+
+        // Loop / Complete events
+        animInstance.addEventListener('complete', () => {
+          if (!isLooping) {
+            isPlaying = false;
+            updatePlayPauseUI(false);
+          }
+        });
+
+        showToast(`Loaded "${fileName}" successfully`, 'success');
+      } catch (err) {
+        showToast(err.message || 'Failed to parse Lottie file', 'error');
+      }
+    }
+
+    function updatePlayPauseUI(playing) {
+      if (playing) {
+        playIcon.classList.add('hidden');
+        pauseIcon.classList.remove('hidden');
+      } else {
+        playIcon.classList.remove('hidden');
+        pauseIcon.classList.add('hidden');
+      }
+    }
+
+    playBtn.addEventListener('click', () => {
+      if (!animInstance) return;
+      if (isPlaying) {
+        animInstance.pause();
+        isPlaying = false;
+      } else {
+        animInstance.play();
+        isPlaying = true;
+      }
+      updatePlayPauseUI(isPlaying);
+    });
+
+    stopBtn.addEventListener('click', () => {
+      if (!animInstance) return;
+      animInstance.stop();
+      isPlaying = false;
+      updatePlayPauseUI(false);
+      progressBar.value = 0;
+      currentTimeEl.textContent = '0:00.0';
+    });
+
+    stepBackBtn.addEventListener('click', () => {
+      if (!animInstance) return;
+      const targetFrame = Math.max(0, animInstance.currentFrame - 10);
+      animInstance.goToAndStop(targetFrame, true);
+      isPlaying = false;
+      updatePlayPauseUI(false);
+    });
+
+    stepForwardBtn.addEventListener('click', () => {
+      if (!animInstance) return;
+      const totalFrames = animInstance.totalFrames;
+      const targetFrame = Math.min(totalFrames - 1, animInstance.currentFrame + 10);
+      animInstance.goToAndStop(targetFrame, true);
+      isPlaying = false;
+      updatePlayPauseUI(false);
+    });
+
+    // Scrubber Progress Events
+    progressBar.addEventListener('input', () => {
+      if (!animInstance) return;
+      isScrubbing = true;
+      const percent = parseFloat(progressBar.value);
+      const targetFrame = (percent / 100) * animInstance.totalFrames;
+      animInstance.goToAndStop(targetFrame, true);
+
+      const fps = currentAnimData.fr || 30;
+      currentTimeEl.textContent = formatTime(targetFrame / fps);
+    });
+
+    progressBar.addEventListener('change', () => {
+      isScrubbing = false;
+      if (isPlaying && animInstance) {
+        animInstance.play();
+      }
+    });
+
+    // Speed Selector Buttons
+    speedButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        speedButtons.forEach(b => {
+          b.classList.remove('bg-indigo-600', 'text-white', 'font-semibold', 'shadow-sm');
+          b.classList.add('text-slate-400');
+        });
+        btn.classList.add('bg-indigo-600', 'text-white', 'font-semibold', 'shadow-sm');
+        btn.classList.remove('text-slate-400');
+
+        currentSpeed = parseFloat(btn.getAttribute('data-speed'));
+        if (animInstance) {
+          animInstance.setSpeed(currentSpeed);
+        }
+      });
+    });
+
+    // Loop Toggle
+    loopToggle.addEventListener('click', () => {
+      isLooping = !isLooping;
+      if (isLooping) {
+        loopToggle.classList.replace('border-slate-700', 'border-indigo-500/50');
+        loopToggle.classList.replace('bg-slate-800', 'bg-indigo-500/20');
+        loopToggle.classList.replace('text-slate-300', 'text-indigo-300');
+      } else {
+        loopToggle.classList.replace('border-indigo-500/50', 'border-slate-700');
+        loopToggle.classList.replace('bg-indigo-500/20', 'bg-slate-800');
+        loopToggle.classList.replace('text-indigo-300', 'text-slate-300');
+      }
+      if (animInstance) {
+        animInstance.loop = isLooping;
+      }
+    });
+
+    // Direction Toggle
+    directionToggle.addEventListener('click', () => {
+      playDirection = playDirection === 1 ? -1 : 1;
+      dirLabel.textContent = playDirection === 1 ? 'Forward' : 'Reverse';
+      if (animInstance) {
+        animInstance.setDirection(playDirection);
+      }
+    });
+
+    dropZone.addEventListener('click', () => fileInput.click());
+
+    dropZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropZone.classList.add('border-indigo-500', 'bg-indigo-500/10');
+    });
+
+    ['dragleave', 'dragend'].forEach(evt => {
+      dropZone.addEventListener(evt, () => {
+        dropZone.classList.remove('border-indigo-500', 'bg-indigo-500/10');
+      });
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('border-indigo-500', 'bg-indigo-500/10');
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        handleIncomingFile(files[0]);
+      }
+    });
+
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files.length > 0) {
+        handleIncomingFile(e.target.files[0]);
+      }
+    });
+
+    function handleIncomingFile(file) {
+      if (!file) return;
+      if (!file.name.endsWith('.json') && file.type !== 'application/json') {
+        showToast('Please upload a .json Lottie animation file.', 'error');
+        return;
+      }
+
+      loaderOverlay.classList.remove('hidden');
+      const reader = new FileReader();
+
+      reader.onload = function(event) {
+        loaderOverlay.classList.add('hidden');
+        try {
+          const parsed = JSON.parse(event.target.result);
+          loadLottieData(parsed, file.name, file.size);
+        } catch (err) {
+          showToast('Corrupted JSON file. Unable to parse.', 'error');
+        }
+      };
+
+      reader.onerror = function() {
+        loaderOverlay.classList.add('hidden');
+        showToast('Failed to read file from disk.', 'error');
+      };
+
+      reader.readAsText(file);
+    }
+
+    loadUrlBtn.addEventListener('click', () => {
+      const url = urlInput.value.trim();
+      if (!url) {
+        showToast('Please enter a valid URL.', 'error');
+        return;
+      }
+
+      loaderOverlay.classList.remove('hidden');
+      fetch(url)
+        .then(res => {
+          if (!res.ok) throw new Error(`HTTP Error ${res.status}`);
+          return res.json();
+        })
+        .then(data => {
+          const fileName = url.split('/').pop().split('?')[0] || 'remote_animation.json';
+          loadLottieData(data, fileName, JSON.stringify(data).length);
+        })
+        .catch(err => {
+          showToast(`Fetch failed: ${err.message}`, 'error');
+        })
+        .finally(() => {
+          loaderOverlay.classList.add('hidden');
+        });
+    });
+
+    const bgButtons = document.querySelectorAll('.bg-mode-btn');
+    bgButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        bgButtons.forEach(b => b.classList.remove('bg-slate-800', 'border-indigo-500'));
+        btn.classList.add('bg-slate-800', 'border-indigo-500');
+
+        const bgType = btn.getAttribute('data-bg');
+        if (bgType === 'transparent') {
+          stage.style.backgroundColor = '';
+          stage.classList.add('bg-transparency-grid');
+        } else {
+          stage.classList.remove('bg-transparency-grid');
+          stage.style.backgroundColor = bgType;
+        }
+      });
+    });
+
+    customBgPicker.addEventListener('input', (e) => {
+      stage.classList.remove('bg-transparency-grid');
+      stage.style.backgroundColor = e.target.value;
+    });
+
+    // Reset to initial demo animation
+    loadDefaultBtn.addEventListener('click', () => {
+      loadLottieData(SAMPLE_LOTTIE_DATA, 'demo_checkmark.json', 0);
+    });
+
+    // Raw JSON Download
+    downloadJsonBtn.addEventListener('click', () => {
+      if (!currentAnimData) {
+        showToast('No animation data loaded.', 'error');
+        return;
+      }
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(currentAnimData, null, 2));
+      const dlAnchorElem = document.createElement('a');
+      dlAnchorElem.setAttribute("href", dataStr);
+      dlAnchorElem.setAttribute("download", (animationTitle.textContent || "animation") + ".json");
+      dlAnchorElem.click();
+      showToast('Exported raw JSON', 'success');
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadLottieData(SAMPLE_LOTTIE_DATA, 'demo_checkmark.json', 0);
+    });
+  </script>
+</body>
+</html>

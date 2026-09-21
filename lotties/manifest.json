@@ -1,0 +1,13 @@
+{
+  "_meta": {
+    "canvas": {"wide": [600, 420], "tall": [420, 680]},
+    "fps": 30,
+    "segments": {"idle": [0, 90], "tap": [90, 180]},
+    "note": "Every file is one shape layer, flat vector, white ground. Markers `idle` and `tap` drive playback by name. Audio clips come from oyekamal/urdu-reading-course (machine voice, CC BY-NC for the pilot; record a human voice before release)."
+  },
+  "letters": [
+    {"id": "alif", "ch": "ا", "name_ur": "الف", "name": "alif", "sound": "long a / vowel seat", "character": "worm", "word_ur": "انار", "word": "anaar (pomegranate)", "file": "alif-worm.json", "canvas": "tall", "audio_name": "audio/names/alif.mp3", "segments": null, "status": "reference (Kamal's original, 15 s continuous, no markers yet)"},
+    {"id": "be", "ch": "ب", "name_ur": "بے", "name": "be", "sound": "b", "character": "duck (batakh)", "word_ur": "بطخ", "word": "batakh (duck)", "file": "ba-duck.json", "canvas": "wide", "audio_name": "audio/names/be.mp3", "segments": null, "status": "reference (Kamal's original, 6 s loop, no markers yet)"},
+    {"id": "te", "ch": "ت", "name_ur": "تے", "name": "te", "sound": "t", "character": "leaf with two butterflies (titli) as dots", "word_ur": "تتلی", "word": "titli (butterfly)", "file": "tay-titli.json", "canvas": "wide", "audio_name": "audio/names/te.mp3", "segments": {"idle": [0, 90], "tap": [90, 180]}, "status": "review", "generator": "scripts/make_tay.py"}
+  ]
+}
