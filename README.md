@@ -59,17 +59,35 @@ Segment numbers come from `lotties/manifest.json`, never hard-coded.
 
 ## What the research says
 
-_Filled from `research/` once the three research passes land; see that folder for the cited versions._
+Full synthesis with citations: **[`docs/app-plan.md`](docs/app-plan.md)**. The short version:
+
+**How to teach a 3–6 year old a letter** (`research/01`, `research/02`)
+- Sound first, name shown. Letter names "have to do little in reading" in Urdu; the character says "b… bay… batakh".
+- The picture must *be* the letter, and its name must start with the letter's sound. That is the embedded-mnemonic effect (Ehri 1984; Roberts & Sadler 2018, d = 1.31), the strongest lever we have. It is also why the Alif worm fails (کیڑا starts with /k/) and why Tay's butterflies pass but its leaf does not.
+- One new letter per 3–5 minute lesson, up to three a day, each letter revisited three or more times. Look-alikes (ب ت ن ی) are taught as a contrast set with dot drills.
+- Pakistan's ECE curriculum wants letters with their initial sounds, meaningful words, right-to-left awareness and tracing, and warns that rote drilling "cripples" development.
+- Learning path in sound-first waves (ب ت ن م ک ل د ا first); alif→ye kept only as the browse view.
+
+**How the app should look** (`research/03`)
+- Landscape, one screen, no scrolling, no text in the child path, tap targets at least 2 cm, register on touch-down.
+- Every letter always reachable, nothing locked. One consistent "tappable" glow. Okabe–Ito palette, red only for errors.
+- Nastaliq for live text, vector shapes for letters inside animations, one real Urdu child-directed voice.
+
+**Engaging without manipulating** (`research/01 §3`, `research/03 §1`)
+- About 80% of preschool apps use manipulative design (JAMA Network Open 2022). We use characters with personality, instant cause-and-effect, a completable sticker collection and parent co-play. We refuse streaks, timers, lives, coins, random rewards, notifications, ads, in-app purchases and characters that beg at exit. The app ends its own session every 3–8 minutes.
+
+**How the characters carry all of that** (`docs/app-plan.md §4`)
+- The character is the mnemonic, the tap target, the sound source and the trace path. Exact dots, no fake dots from round eyes near strokes, same state set for every letter, one layer under 60 KB, 30 fps on a 2 GB Android phone.
 
 ## Status
 
-| Letter | Character | Status |
-|---|---|---|
-| ا alif | worm | Kamal's reference, 15 s continuous, no markers yet |
-| ب be | duck | Kamal's reference, 6 s loop, no markers yet |
-| ت te | leaf + butterflies | generated, in review |
+| Letter | Character | Mnemonic check | Status |
+|---|---|---|---|
+| ا alif | worm | fails (کیڑا); Alif word is انار | Kamal's reference, decision needed |
+| ب be | duck | passes (بطخ) | Kamal's reference, no markers yet |
+| ت te | leaf + two butterflies | passes via butterflies (تتلی) | generated, in review |
 
-Open decisions for Kamal: dots as creatures or plain dots; tap length (3 s); canvas convention; letter order for the first batch. Tracked in `docs/decisions.md`.
+Open decisions for Kamal are in [`docs/decisions.md`](docs/decisions.md): Alif re-theme, eye style (round eyes near strokes read as extra dots), tap length, marker set, stack. Next build: ن م ک ل د to finish wave 1.
 
 ## Licence
 
